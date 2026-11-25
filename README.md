@@ -4,23 +4,42 @@ Verify the exact machine terms of a supplied EIN.LLC company letter using a serv
 
 ## Run the verifier
 
-Install from the corresponding npm tarball or Python wheel, then run the same command with a letter supplied by its holder. The supported runtimes are Node 22.12+ and Python 3.11+.
+Use a copy of the compact JWS supplied by the letter holder. The verifier runs on Deno 2, Node 22.12+, and Python 3.11+.
 
-```sh
-npm install /path/to/agent-authority-letter-0.1.0.tgz
-npx --no-install agent-authority-letter letter.jws --origin https://ein.llc
+### JavaScript from JSR
+
+For a published `@epistemedeus/authority-letter` release, import its library in Deno:
+
+```ts
+import { createVerifier } from 'jsr:@epistemedeus/authority-letter@0.1.0';
 ```
 
+Run the JSR CLI with Deno and grant access to the files and origin you supply:
+
 ```sh
-python -m pip install /path/to/agent_authority_letter-0.1.0-py3-none-any.whl
+deno run --allow-read=letter.jws --allow-net=ein.llc jsr:@epistemedeus/authority-letter@0.1.0/cli letter.jws --origin https://ein.llc
+```
+
+Deno 2.9 applies a 24-hour package age window by default. A brand-new release becomes available to default Deno installs after that window.
+
+For Node ESM, add `@jsr:registry=https://npm.jsr.io` to the consumer project's `.npmrc`. Install the JSR package with `npm install @jsr/epistemedeus__authority-letter@0.1.0` and import `createVerifier` from `@jsr/epistemedeus__authority-letter`.
+
+### Python from GitHub Releases
+
+Install the wheel from its versioned release URL when the asset is available:
+
+```sh
+python -m pip install 'https://github.com/epistemedeus/agent-authority-letter/releases/download/v0.1.0/agent_authority_letter-0.1.0-py3-none-any.whl'
 agent-authority-letter letter.jws --origin https://ein.llc
 ```
 
-Both commands return a JSON decision. Exit `0` means usable active authority. Exit `1` means integrity or schema could not be established. Exit `2` means invalid CLI inputs. Exit `3` means signature and schema passed and usable current authority was not established. Only `usable: true` promotes a result to current authority. Use `--offline --jwks /path/to/trusted-jwks.json` for local integrity. Offline `currentStatus` is always `unknown`.
+Both artifacts can also be installed from local files. A local npm tarball keeps the `agent-authority-letter` import and executable; a local wheel takes the same `pip install` command with a file path.
+
+The CLIs return a JSON decision. Exit `0` means usable active authority. Exit `1` means integrity or schema could not be established. Exit `2` means invalid CLI inputs. Exit `3` means signature and schema passed and usable current authority was not established. Only `usable: true` promotes a result to current authority. Use `--offline --jwks /path/to/trusted-jwks.json` for local integrity. Offline `currentStatus` is always `unknown`.
 
 ```js
 import { readFile } from 'node:fs/promises';
-import { createVerifier } from 'agent-authority-letter';
+import { createVerifier } from '@jsr/epistemedeus__authority-letter';
 const verify = createVerifier({ origin: 'https://ein.llc' });
 const decision = await verify((await readFile('letter.jws', 'utf8')).trim());
 console.log(decision.signature, decision.currentStatus, decision.usable);
@@ -54,3 +73,12 @@ The service's `/api/letters/examples.json` returns illustrative `active` and `re
 ## Test
 
 Run `npm ci && npm test`. To exercise the same cases in Python, install the Python project into a virtual environment, set `AUTHORITY_TEST_PYTHON` to its Python executable, and repeat `npm test`.
+
+To validate the JSR package with Deno 2.9.8, install the Node 22 type declarations for the publish-time checker and run the checked dry run:
+
+```sh
+deno install --node-modules-dir=auto --no-lock --no-save npm:@types/node@22.20.5
+deno publish --dry-run --node-modules-dir=auto --no-lock
+```
+
+To build the Python wheel and source distribution from a clean checkout, run `python -m build`.

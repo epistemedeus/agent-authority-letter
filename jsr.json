@@ -1,0 +1,20 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@epistemedeus/authority-letter",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./src/jsr.ts",
+    "./cli": "./src/jsr-cli.ts"
+  },
+  "license": "MIT",
+  "publish": {
+    "include": [
+      "jsr.json",
+      "package.json",
+      "README.md",
+      "LICENSE",
+      "THIRD-PARTY-NOTICES.md",
+      "src/"
+    ]
+  }
+}
