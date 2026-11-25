@@ -1,0 +1,2 @@
+include LICENSE README.md THIRD-PARTY-NOTICES.md
+recursive-include python/agent_authority_letter *.schema.json

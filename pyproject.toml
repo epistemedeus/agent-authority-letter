@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-authority-letter"
+version = "0.1.0"
+description = "Verify an EIN.LLC agent authority letter and check its current status"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "THIRD-PARTY-NOTICES.md"]
+requires-python = ">=3.11"
+dependencies = ["joserfc==1.8.0", "jsonschema==4.26.0"]
+
+[project.urls]
+Repository = "https://github.com/epistemedeus/agent-authority-letter"
+
+[project.scripts]
+agent-authority-letter = "agent_authority_letter.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["python"]
+
+[tool.setuptools.package-data]
+agent_authority_letter = ["*.schema.json"]
